@@ -35,6 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newFilm.length > 21) {
                 newFilm = `${newFilm.substring(0, 22)}...`
             }
+
+            if (favorite) {
+                console.log('Ваш любимый фильм');
+            }
+            
             movieDB.movies.push(newFilm);
             sortArr(movieDB.movies);
             createMoviesList(movieDB.movies, moviList);
@@ -76,12 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
         arr.sort();
     }
 
-    sortArr(movieDB.movies);
 
 
     function createMoviesList(films, parent) {
         // console.log(moviList.innerHTML);
         parent.innerHTML = "";
+
+        // сортируем фильмы при присоздании листа
+        sortArr(films);
+
 
         // перебираем объект и генерируем html
         films.forEach(function (film, i) {
@@ -94,15 +102,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         //удаление
-        document.querySelector('.delete').forEach(function(btn, i) {
-            btn.addEventListener('click', function () {
+        document.querySelectorAll('.delete').forEach((btn, i) => {
+            btn.addEventListener('click', () => {
                 //обратились к родительскому эл. и удаляем из HTML
                 btn.parentElement.remove();
                 //удаляем из базы данных
                 movieDB.movies.splice(i, 1);
 
+                //Рикурсия - функция вызывает сама себя внутри
+                // заново перестраиваем элементы в объекте, соответственно порядковый номер также перестраиваеться
+                createMoviesList(films, parent);
+
             });
         });
+
     }
 
     createMoviesList(movieDB.movies, moviList);
